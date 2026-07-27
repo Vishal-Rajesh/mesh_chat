@@ -1,6 +1,5 @@
 package com.example.ui
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,7 @@ class MeshViewModel(
     val meshManager: MeshManager
 ) : ViewModel() {
 
-    // Messages flow from Room
+    // Messages flow from Room SQLite DB
     val messages: StateFlow<List<MessageEntity>> = repository.allMessages
         .stateIn(
             scope = viewModelScope,
@@ -27,14 +26,19 @@ class MeshViewModel(
             initialValue = emptyList()
         )
 
-    // Sim Nodes from Manager
+    // Discovered Nodes from Manager
     val simNodes = meshManager.simNodes
 
     // Logs from Manager
     val networkLogs = meshManager.networkLogs
 
-    // Current conversation partner ID ("ALL_NODES" for group/SOS chat)
-    private val _currentRecipientId = MutableStateFlow("alice")
+    // Hardware Radio States
+    val isBleScanning = meshManager.isBleScanningState
+    val isBleAdvertising = meshManager.isBleAdvertisingState
+    val isWifiP2pSearching = meshManager.isWifiP2pSearchingState
+
+    // Current conversation partner ID ("ALL_NODES" for broadcast)
+    private val _currentRecipientId = MutableStateFlow("ALL_NODES")
     val currentRecipientId = _currentRecipientId.asStateFlow()
 
     // Loading/sending states
@@ -61,8 +65,8 @@ class MeshViewModel(
         }
     }
 
-    fun updateNodePosition(nodeId: String, x: Float, y: Float) {
-        meshManager.updateNodePosition(nodeId, x, y)
+    fun toggleBleScanning() {
+        meshManager.toggleBleScanning()
     }
 
     fun toggleBleAdvertising() {
@@ -71,6 +75,22 @@ class MeshViewModel(
 
     fun toggleWifiDirectSearching() {
         meshManager.toggleWifiP2pDiscovery()
+    }
+
+    fun addCustomNode(name: String, id: String) {
+        meshManager.addCustomNode(name, id)
+    }
+
+    fun enableGeminiAiNode() {
+        meshManager.enableGeminiAiNode()
+    }
+
+    fun updateNodePosition(nodeId: String, x: Float, y: Float) {
+        meshManager.updateNodePosition(nodeId, x, y)
+    }
+
+    fun checkPermissionsGranted(): Boolean {
+        return meshManager.checkPermissionsGranted()
     }
 
     fun clearHistory() {

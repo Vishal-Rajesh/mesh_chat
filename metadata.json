@@ -1,0 +1,6 @@
+{
+  "name": "OffGrid Mesh",
+  "description": "A hop-relayed, zero-infrastructure communication layer for Android — built on Jetpack Compose, Bluetooth Low Energy, and Wi-Fi Direct with a gorgeous Bento Grid layout.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
